@@ -1,95 +1,229 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { useState, useEffect } from "react";
+import { firestore } from "@/firebase";
+import {
+  Box,
+  Typography,
+  Stack,
+  Button,
+  palette,
+  TextField,
+} from "@mui/material";
+import {
+  query,
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+  setDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import { FaPlus, FaMinus, FaXmark } from "react-icons/fa6";
 
 export default function Home() {
+  const [pantry, setPantry] = useState([]);
+  const [itemName, setItemName] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [openAdd, setOpenAdd] = useState(false);
+
+  const updatePantry = async () => {
+    const snap = query(collection(firestore, "inventory"));
+    const docs = await getDocs(snap);
+
+    const inventoryList = [];
+    docs.forEach((doc) => {
+      inventoryList.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+
+    setPantry(inventoryList);
+  };
+
+  const increaseQuantity = async (itemId) => {
+    const docRef = doc(collection(firestore, "inventory"), itemId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      let itemQuantity = docSnap.data().quantity;
+      itemQuantity += 1;
+
+      await updateDoc(docRef, {
+        quantity: itemQuantity,
+      });
+    } else {
+      alert("Increase Count Item Doesn't exist");
+    }
+
+    await updatePantry();
+  };
+
+  const decreaseQuantity = async (itemId) => {
+    const docRef = doc(collection(firestore, "inventory"), itemId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      let itemQuantity = docSnap.data().quantity;
+      itemQuantity -= 1;
+
+      if (itemQuantity > 0) {
+        await updateDoc(docRef, {
+          quantity: itemQuantity,
+        });
+      } else {
+        await deleteDoc(docRef);
+      }
+    } else {
+      alert("Decrease Count Item Doesn't exist");
+    }
+
+    await updatePantry();
+  };
+
+  const changeOpenAdd = () => {
+    setOpenAdd(!openAdd);
+  };
+
+  const clearSearch = () => {
+    setSearchName("");
+  };
+
+  useEffect(() => {
+    updatePantry();
+  }, []);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Box
+      width="100vw"
+      height="100vh"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Box
+        border="1px solid black"
+        width="100%"
+        maxWidth="800px"
+        minHeight="500px"
+        borderRadius="5px"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        gap="15px"
+        p="10px"
+        m="10px"
+      >
+        {/*Header*/}
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          p="10px 15px"
+          width="100%"
+          border="1px solid black"
+        >
+          <Typography variant="h3">Pantry Tracker</Typography>
+          <Button
+            onClick={changeOpenAdd}
+            sx={{
+              color: "#FFF",
+              bgcolor: openAdd ? "red" : "green",
+              p: "5px 10px",
+              "&:hover": {
+                bgcolor: openAdd ? "#840000" : "#004B00",
+              },
+            }}
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+            {openAdd ? "Close" : "Add"}
+          </Button>
+        </Box>
+
+        {/*Foods*/}
+        <Box
+          p="10px 15px"
+          width="100%"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          gap="10px"
+          border="1px solid black"
+        >
+          {/* Search Function */}
+          <Box
+            width="100%"
+            display="flex"
+            justifyContent="space-around"
+            gap="15px"
+            mb="10px"
+          >
+            <TextField
+              variant="outlined"
+              fullWidth
+              p="5px 10px"
+              size="small"
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
             />
-          </a>
-        </div>
-      </div>
+            <Button
+              onClick={clearSearch}
+              sx={{
+                color: "#FFF",
+                bgcolor: "#4169E1",
+                p: "5px 10px",
+                "&:hover": {
+                  bgcolor: "#00035B",
+                },
+              }}
+            >
+              Clear
+            </Button>
+          </Box>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+          {/* Food Display */}
+          {pantry.map((food) => (
+            <Box
+              key={food.id}
+              width="80%"
+              p="8px 10px 8px 20px"
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              border="1px solid black"
+              borderRadius="5px"
+            >
+              <Box>
+                <Typography variant="h6">{food.foodName}</Typography>
+                <Typography variant="subtitle1">
+                  Quantity: {food.quantity}
+                </Typography>
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="space-around"
+                minWidth="125px"
+                fontSize="20px"
+              >
+                <FaPlus
+                  color="green"
+                  cursor="pointer"
+                  onClick={() => {
+                    increaseQuantity(food.id);
+                  }}
+                />
+                <FaMinus
+                  color="orange"
+                  cursor="pointer"
+                  onClick={() => {
+                    decreaseQuantity(food.id);
+                  }}
+                />
+                <FaXmark color="red" />
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+    </Box>
   );
 }
