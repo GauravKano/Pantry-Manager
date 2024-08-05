@@ -21,21 +21,43 @@ export default function Home() {
   const [addError, setAddError] = useState(false);
   const [searchName, setSearchName] = useState("");
   const [openAdd, setOpenAdd] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Update Pantry
-  const updatePantry = async () => {
+  // const updatePantry = async () => {
+  //   const snap = query(collection(firestore, "inventory"));
+  //   const docs = await getDocs(snap);
+
+  //   const inventoryList = [];
+  //   docs.forEach((doc) => {
+  //     inventoryList.push({
+  //       id: doc.id,
+  //       ...doc.data(),
+  //     });
+  //   });
+
+  //   setPantry(inventoryList);
+  // };
+
+  const updateSearchPantry = async (searchItemName) => {
+    setLoading(true);
     const snap = query(collection(firestore, "inventory"));
     const docs = await getDocs(snap);
 
+    searchItemName = searchItemName.trim().replace(/\s+/g, " ").toLowerCase();
     const inventoryList = [];
+
     docs.forEach((doc) => {
-      inventoryList.push({
-        id: doc.id,
-        ...doc.data(),
-      });
+      if (doc.data().foodName.toLowerCase().includes(searchItemName)) {
+        inventoryList.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      }
     });
 
     setPantry(inventoryList);
+    setLoading(false);
   };
 
   // Increase Quantitiy of Item
@@ -50,11 +72,11 @@ export default function Home() {
       await updateDoc(docRef, {
         quantity: itemQuantity,
       });
+
+      await updateSearchPantry(searchName);
     } else {
       alert("Increase Count Item Doesn't exist");
     }
-
-    await updatePantry();
   };
 
   // Decrease Quantitiy of Item
@@ -73,11 +95,11 @@ export default function Home() {
       } else {
         await deleteDoc(docRef);
       }
+
+      await updateSearchPantry(searchName);
     } else {
       alert("Decrease Count Item Doesn't exist");
     }
-
-    await updatePantry();
   };
 
   // Delete Item
@@ -87,26 +109,27 @@ export default function Home() {
 
     if (docSnap.exists()) {
       await deleteDoc(docRef);
+
+      await updateSearchPantry(searchName);
     } else {
       alert("Delete Item Doesn't exist");
     }
-
-    await updatePantry();
   };
 
   //Add Item
   const addItem = async () => {
     const inventoryRef = collection(firestore, "inventory");
+    const addItemName = itemName.trim().replace(/\s+/g, " ");
 
     await addDoc(inventoryRef, {
-      foodName: itemName,
+      foodName: addItemName,
       quantity: itemQuantity,
     });
 
     setItemName("");
     setItemQuantity(1);
 
-    await updatePantry();
+    await updateSearchPantry(searchName);
   };
 
   // Open Add Item Page
@@ -122,14 +145,15 @@ export default function Home() {
     setSearchName("");
   };
 
+  // Update when Starting
   useEffect(() => {
-    updatePantry();
+    updateSearchPantry(searchName);
   }, []);
 
   return (
     <Box
-      width="100vw"
-      height="100vh"
+      width="100%"
+      height="100%"
       display="flex"
       justifyContent="center"
       alignItems="center"
@@ -137,6 +161,8 @@ export default function Home() {
       <Box
         border="1px solid black"
         width="100%"
+        height="95%"
+        maxHeight="95vh"
         maxWidth="800px"
         minHeight="500px"
         borderRadius="5px"
@@ -155,7 +181,9 @@ export default function Home() {
           width="100%"
           border="1px solid black"
         >
-          <Typography variant="h3">Pantry Tracker</Typography>
+          <Typography variant="h3" sx={{ fontSize: "clamp(2rem, 3vw, 3rem)" }}>
+            Pantry Tracker
+          </Typography>
           <Button
             onClick={changeOpenAdd}
             sx={{
@@ -184,7 +212,10 @@ export default function Home() {
           >
             <Box display="flex" justifyContent="center" gap="20px" width="100%">
               <Box maxWidth="400px" flex="1">
-                <Typography variant="h6" fontSize="18px">
+                <Typography
+                  variant="h6"
+                  sx={{ fontSize: "clamp(14px, 3vw, 18px)" }}
+                >
                   Enter Food Name:
                 </Typography>
                 <TextField
@@ -199,6 +230,7 @@ export default function Home() {
                   }}
                   InputProps={{
                     sx: {
+                      fontSize: "clamp(.9rem, 3vw, 1rem)",
                       "& .MuiOutlinedInput-notchedOutline": {
                         borderColor: addError ? "red" : "rgba(0, 0, 0, 0.23)",
                       },
@@ -213,7 +245,10 @@ export default function Home() {
                 />
               </Box>
               <Box maxWidth="150px" flex="1">
-                <Typography variant="h6" fontSize="18px">
+                <Typography
+                  variant="h6"
+                  sx={{ fontSize: "clamp(14px, 3vw, 18px)" }}
+                >
                   Enter Quantity:
                 </Typography>
                 <TextField
@@ -242,6 +277,7 @@ export default function Home() {
                       e.preventDefault();
                     }
                   }}
+                  sx={{ fontSize: "clamp(.9rem, 3vw, 1rem)" }}
                 />
               </Box>
             </Box>
@@ -273,11 +309,13 @@ export default function Home() {
         <Box
           p="10px 15px"
           width="100%"
+          height="100%"
           display="flex"
           flexDirection="column"
           alignItems="center"
           gap="10px"
           border="1px solid black"
+          overflow="hidden"
         >
           {/* Search Function */}
           <Box
@@ -294,7 +332,10 @@ export default function Home() {
               size="small"
               placeholder="Search Food Item"
               value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
+              onChange={(e) => {
+                setSearchName(e.target.value);
+                updateSearchPantry(e.target.value);
+              }}
             />
             <Button
               onClick={clearSearch}
@@ -312,53 +353,99 @@ export default function Home() {
           </Box>
 
           {/* Food Display */}
-          {pantry.map((food) => (
-            <Box
-              key={food.id}
-              width="80%"
-              p="8px 10px 8px 20px"
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              border="1px solid black"
-              borderRadius="5px"
-            >
-              <Box>
-                <Typography variant="h6">{food.foodName}</Typography>
-                <Typography variant="subtitle1">
-                  Quantity: {food.quantity}
-                </Typography>
-              </Box>
-              <Box
-                display="flex"
-                justifyContent="space-around"
-                minWidth="125px"
-                fontSize="20px"
-              >
-                <FaPlus
-                  color="green"
-                  cursor="pointer"
-                  onClick={() => {
-                    increaseQuantity(food.id);
-                  }}
-                />
-                <FaMinus
-                  color="orange"
-                  cursor="pointer"
-                  onClick={() => {
-                    decreaseQuantity(food.id);
-                  }}
-                />
-                <FaXmark
-                  color="red"
-                  cursor="pointer"
-                  onClick={() => {
-                    deleteItem(food.id);
-                  }}
-                />
-              </Box>
-            </Box>
-          ))}
+
+          <Box
+            minHeight="300px"
+            overflow="auto"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            gap="10px"
+            width="85%"
+            sx={{
+              "&::-webkit-scrollbar": {
+                width: "8px",
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#f1f1f1",
+                borderRadius: "10px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#c1c1c1",
+                borderRadius: "10px",
+                "&:hover": {
+                  backgroundColor: "#a1a1a1",
+                },
+              },
+            }}
+          >
+            {loading ? (
+              <Typography fontSize="20px">Loading...</Typography>
+            ) : pantry.length === 0 ? (
+              <Typography fontSize="20px">No Items Found</Typography>
+            ) : (
+              pantry.map((food) => (
+                <Box
+                  key={food.id}
+                  width="95%"
+                  p="8px 10px 8px 20px"
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  border="1px solid black"
+                  borderRadius="5px"
+                  gap="10px"
+                >
+                  <Box>
+                    <Typography
+                      variant="h6"
+                      sx={{ fontSize: "clamp(1rem, 4vw, 1.25rem)" }}
+                    >
+                      {food.foodName}
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontSize: "clamp(.9rem, 3vw, 1rem)" }}
+                    >
+                      Quantity: {food.quantity}
+                    </Typography>
+                  </Box>
+                  <Box
+                    display="flex"
+                    justifyContent="space-around"
+                    minWidth="125px"
+                    fontSize="20px"
+                    sx={{
+                      fontSize: "clamp(15px, 3vw, 20px)",
+                      minWidth: "clamp(75px, 3vw, 125px)",
+                    }}
+                  >
+                    <FaPlus
+                      color="green"
+                      cursor="pointer"
+                      onClick={() => {
+                        increaseQuantity(food.id);
+                      }}
+                    />
+                    <FaMinus
+                      color="orange"
+                      cursor="pointer"
+                      onClick={() => {
+                        decreaseQuantity(food.id);
+                      }}
+                    />
+                    <FaXmark
+                      color="red"
+                      cursor="pointer"
+                      onClick={() => {
+                        deleteItem(food.id);
+                      }}
+                    />
+                  </Box>
+                </Box>
+              ))
+            )}
+          </Box>
         </Box>
       </Box>
     </Box>
