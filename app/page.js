@@ -120,10 +120,10 @@ export default function Home() {
   const addItem = async () => {
     const inventoryRef = collection(firestore, "inventory");
     const addItemName = itemName.trim().replace(/\s+/g, " ");
-
+    const addItemQuantity = Number(itemQuantity);
     await addDoc(inventoryRef, {
       foodName: addItemName,
-      quantity: itemQuantity,
+      quantity: addItemQuantity,
     });
 
     setItemName("");
@@ -143,6 +143,7 @@ export default function Home() {
   // Clear the Search Bar
   const clearSearch = () => {
     setSearchName("");
+    updateSearchPantry("");
   };
 
   // Update when Starting
@@ -152,8 +153,8 @@ export default function Home() {
 
   return (
     <Box
-      width="100%"
-      height="100%"
+      width="100vw"
+      height="100vh"
       display="flex"
       justifyContent="center"
       alignItems="center"
@@ -162,7 +163,6 @@ export default function Home() {
         border="1px solid black"
         width="100%"
         height="95%"
-        maxHeight="95vh"
         maxWidth="800px"
         minHeight="500px"
         borderRadius="5px"
@@ -177,11 +177,11 @@ export default function Home() {
         <Box
           display="flex"
           justifyContent="space-between"
-          p="10px 15px"
+          p="10px 15px 10px 25px"
           width="100%"
           border="1px solid black"
         >
-          <Typography variant="h3" sx={{ fontSize: "clamp(2rem, 3vw, 3rem)" }}>
+          <Typography variant="h3" sx={{ fontSize: "clamp(2rem, 7vw, 3rem)" }}>
             Pantry Tracker
           </Typography>
           <Button
@@ -307,7 +307,7 @@ export default function Home() {
 
         {/*Foods*/}
         <Box
-          p="10px 15px"
+          p="15px 15px"
           width="100%"
           height="100%"
           display="flex"
@@ -319,7 +319,7 @@ export default function Home() {
         >
           {/* Search Function */}
           <Box
-            width="90%"
+            width={{ xs: "100%", md: "90%" }}
             display="flex"
             justifyContent="space-around"
             gap="15px"
@@ -361,7 +361,8 @@ export default function Home() {
             flexDirection="column"
             alignItems="center"
             gap="10px"
-            width="85%"
+            width={{ xs: "95%", md: "85%" }}
+            height="100%"
             sx={{
               "&::-webkit-scrollbar": {
                 width: "8px",
@@ -399,13 +400,13 @@ export default function Home() {
                   <Box>
                     <Typography
                       variant="h6"
-                      sx={{ fontSize: "clamp(1rem, 4vw, 1.25rem)" }}
+                      sx={{ fontSize: "clamp(1rem, 4vw, 1.5rem)" }}
                     >
                       {food.foodName}
                     </Typography>
                     <Typography
                       variant="subtitle1"
-                      sx={{ fontSize: "clamp(.9rem, 3vw, 1rem)" }}
+                      sx={{ fontSize: "clamp(.9rem, 3vw, 1.1rem)" }}
                     >
                       Quantity: {food.quantity}
                     </Typography>
@@ -413,11 +414,10 @@ export default function Home() {
                   <Box
                     display="flex"
                     justifyContent="space-around"
-                    minWidth="125px"
                     fontSize="20px"
+                    minWidth={{ xs: "100px", md: "150px", sm: "125px" }}
                     sx={{
-                      fontSize: "clamp(15px, 3vw, 20px)",
-                      minWidth: "clamp(75px, 3vw, 125px)",
+                      fontSize: "clamp(18px, 3vw, 22px)",
                     }}
                   >
                     <FaPlus
