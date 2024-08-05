@@ -1,14 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { firestore } from "@/firebase";
-import {
-  Box,
-  Typography,
-  Stack,
-  Button,
-  palette,
-  TextField,
-} from "@mui/material";
+import { Box, Typography, Button, TextField } from "@mui/material";
 import {
   query,
   collection,
@@ -16,17 +9,20 @@ import {
   doc,
   getDoc,
   updateDoc,
-  setDoc,
   deleteDoc,
+  addDoc,
 } from "firebase/firestore";
 import { FaPlus, FaMinus, FaXmark } from "react-icons/fa6";
 
 export default function Home() {
   const [pantry, setPantry] = useState([]);
   const [itemName, setItemName] = useState("");
+  const [itemQuantity, setItemQuantity] = useState(1);
+  const [addError, setAddError] = useState(false);
   const [searchName, setSearchName] = useState("");
   const [openAdd, setOpenAdd] = useState(false);
 
+  // Update Pantry
   const updatePantry = async () => {
     const snap = query(collection(firestore, "inventory"));
     const docs = await getDocs(snap);
@@ -42,6 +38,7 @@ export default function Home() {
     setPantry(inventoryList);
   };
 
+  // Increase Quantitiy of Item
   const increaseQuantity = async (itemId) => {
     const docRef = doc(collection(firestore, "inventory"), itemId);
     const docSnap = await getDoc(docRef);
@@ -60,6 +57,7 @@ export default function Home() {
     await updatePantry();
   };
 
+  // Decrease Quantitiy of Item
   const decreaseQuantity = async (itemId) => {
     const docRef = doc(collection(firestore, "inventory"), itemId);
     const docSnap = await getDoc(docRef);
@@ -82,10 +80,44 @@ export default function Home() {
     await updatePantry();
   };
 
-  const changeOpenAdd = () => {
-    setOpenAdd(!openAdd);
+  // Delete Item
+  const deleteItem = async (itemId) => {
+    const docRef = doc(collection(firestore, "inventory"), itemId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      await deleteDoc(docRef);
+    } else {
+      alert("Delete Item Doesn't exist");
+    }
+
+    await updatePantry();
   };
 
+  //Add Item
+  const addItem = async () => {
+    const inventoryRef = collection(firestore, "inventory");
+
+    await addDoc(inventoryRef, {
+      foodName: itemName,
+      quantity: itemQuantity,
+    });
+
+    setItemName("");
+    setItemQuantity(1);
+
+    await updatePantry();
+  };
+
+  // Open Add Item Page
+  const changeOpenAdd = () => {
+    setOpenAdd(!openAdd);
+    if (!openAdd) {
+      setAddError(false);
+    }
+  };
+
+  // Clear the Search Bar
   const clearSearch = () => {
     setSearchName("");
   };
@@ -139,6 +171,104 @@ export default function Home() {
           </Button>
         </Box>
 
+        {/* Add Page */}
+        {openAdd && (
+          <Box
+            p="15px 30px 20px"
+            width="100%"
+            border="1px solid black"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            gap="20px"
+          >
+            <Box display="flex" justifyContent="center" gap="20px" width="100%">
+              <Box maxWidth="400px" flex="1">
+                <Typography variant="h6" fontSize="18px">
+                  Enter Food Name:
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  p="5px 10px"
+                  placeholder="Ex: Mashed Potato"
+                  fullWidth
+                  size="small"
+                  value={itemName}
+                  onChange={(e) => {
+                    setItemName(e.target.value);
+                  }}
+                  InputProps={{
+                    sx: {
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: addError ? "red" : "rgba(0, 0, 0, 0.23)",
+                      },
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: addError ? "red" : "rgba(0, 0, 0, 0.87)",
+                      },
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: addError ? "red" : "#3f51b5",
+                      },
+                    },
+                  }}
+                />
+              </Box>
+              <Box maxWidth="150px" flex="1">
+                <Typography variant="h6" fontSize="18px">
+                  Enter Quantity:
+                </Typography>
+                <TextField
+                  type="number"
+                  variant="outlined"
+                  placeholder="Ex: 1"
+                  size="small"
+                  fullWidth
+                  value={itemQuantity}
+                  onChange={(e) => {
+                    const setValue = e.target.value;
+                    if (setValue === "" || setValue > 0) {
+                      setItemQuantity(e.target.value);
+                    } else {
+                      setItemQuantity(1);
+                    }
+                  }}
+                  onBlur={() => {
+                    if (itemQuantity === "" || itemQuantity <= 0) {
+                      setItemQuantity(1);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    const invalidChars = ["+", "-", "E", "e", ".", ","];
+                    if (invalidChars.includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </Box>
+            </Box>
+            <Button
+              sx={{
+                width: "80%",
+                color: "#FFF",
+                bgcolor: "black",
+                p: "5px 10px",
+                "&:hover": {
+                  bgcolor: "grey",
+                },
+              }}
+              onClick={() => {
+                if (itemName === "") {
+                  setAddError(true);
+                } else {
+                  setAddError(false);
+                  addItem();
+                }
+              }}
+            >
+              Add Item
+            </Button>
+          </Box>
+        )}
+
         {/*Foods*/}
         <Box
           p="10px 15px"
@@ -151,7 +281,7 @@ export default function Home() {
         >
           {/* Search Function */}
           <Box
-            width="100%"
+            width="90%"
             display="flex"
             justifyContent="space-around"
             gap="15px"
@@ -162,6 +292,7 @@ export default function Home() {
               fullWidth
               p="5px 10px"
               size="small"
+              placeholder="Search Food Item"
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
             />
@@ -218,7 +349,13 @@ export default function Home() {
                     decreaseQuantity(food.id);
                   }}
                 />
-                <FaXmark color="red" />
+                <FaXmark
+                  color="red"
+                  cursor="pointer"
+                  onClick={() => {
+                    deleteItem(food.id);
+                  }}
+                />
               </Box>
             </Box>
           ))}
