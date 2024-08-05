@@ -160,7 +160,7 @@ export default function Home() {
       alignItems="center"
     >
       <Box
-        border="1px solid black"
+        // border="1px solid black"
         width="100%"
         height="95%"
         maxWidth="800px"
@@ -179,9 +179,12 @@ export default function Home() {
           justifyContent="space-between"
           p="10px 15px 10px 25px"
           width="100%"
-          border="1px solid black"
+          sx={{ borderBottom: "1px solid grey" }}
         >
-          <Typography variant="h3" sx={{ fontSize: "clamp(2rem, 7vw, 3rem)" }}>
+          <Typography
+            variant="h3"
+            sx={{ fontSize: "clamp(2rem, 7vw, 2.7rem)" }}
+          >
             Pantry Tracker
           </Typography>
           <Button
@@ -211,7 +214,7 @@ export default function Home() {
             gap="20px"
           >
             <Box display="flex" justifyContent="center" gap="20px" width="100%">
-              <Box maxWidth="400px" flex="1">
+              <Box flex="6">
                 <Typography
                   variant="h6"
                   sx={{ fontSize: "clamp(14px, 3vw, 18px)" }}
@@ -244,7 +247,7 @@ export default function Home() {
                   }}
                 />
               </Box>
-              <Box maxWidth="150px" flex="1">
+              <Box flex="4">
                 <Typography
                   variant="h6"
                   sx={{ fontSize: "clamp(14px, 3vw, 18px)" }}
@@ -283,7 +286,7 @@ export default function Home() {
             </Box>
             <Button
               sx={{
-                width: "80%",
+                width: "100%",
                 color: "#FFF",
                 bgcolor: "black",
                 p: "5px 10px",
@@ -307,19 +310,19 @@ export default function Home() {
 
         {/*Foods*/}
         <Box
-          p="15px 15px"
+          p="15px 30px"
           width="100%"
           height="100%"
           display="flex"
           flexDirection="column"
           alignItems="center"
           gap="10px"
-          border="1px solid black"
+          // border="1px solid black"
           overflow="hidden"
         >
           {/* Search Function */}
           <Box
-            width={{ xs: "100%", md: "90%" }}
+            width="100%"
             display="flex"
             justifyContent="space-around"
             gap="15px"
@@ -361,7 +364,7 @@ export default function Home() {
             flexDirection="column"
             alignItems="center"
             gap="10px"
-            width={{ xs: "95%", md: "85%" }}
+            width="100%"
             height="100%"
             sx={{
               "&::-webkit-scrollbar": {
@@ -400,7 +403,7 @@ export default function Home() {
                   <Box>
                     <Typography
                       variant="h6"
-                      sx={{ fontSize: "clamp(1rem, 4vw, 1.5rem)" }}
+                      sx={{ fontSize: "clamp(1rem, 4vw, 1.4rem)" }}
                     >
                       {food.foodName}
                     </Typography>
