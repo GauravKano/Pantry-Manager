@@ -13,9 +13,7 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { FaPlus, FaMinus, FaXmark } from "react-icons/fa6";
-import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
-import withAuth from "../withAuth";
+import WithAuth from "../withAuth";
 
 const Main = () => {
   const [pantry, setPantry] = useState([]);
