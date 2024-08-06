@@ -25,7 +25,6 @@ export default function LandingPage() {
   const userSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log(result);
     } catch {
       console.error("There was an Error with Sign-In");
     }
