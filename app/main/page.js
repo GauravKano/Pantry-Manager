@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { firestore } from "@/firebase";
+import { firestore, auth } from "@/firebase";
 import { Box, Typography, Button, TextField } from "@mui/material";
 import {
   query,
@@ -13,8 +13,11 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { FaPlus, FaMinus, FaXmark } from "react-icons/fa6";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import withAuth from "../withAuth";
 
-export default function Main() {
+const Main = () => {
   const [pantry, setPantry] = useState([]);
   const [itemName, setItemName] = useState("");
   const [itemQuantity, setItemQuantity] = useState(1);
@@ -140,16 +143,10 @@ export default function Main() {
     }
   };
 
-  // Clear the Search Bar
-  const clearSearch = () => {
-    setSearchName("");
-    updateSearchPantry("");
-  };
-
   // Update when Starting
   useEffect(() => {
     updateSearchPantry(searchName);
-  }, []);
+  }, [searchName]);
 
   return (
     <Box
@@ -335,13 +332,10 @@ export default function Main() {
               size="small"
               placeholder="Search Food Item"
               value={searchName}
-              onChange={(e) => {
-                setSearchName(e.target.value);
-                updateSearchPantry(e.target.value);
-              }}
+              onChange={(e) => setSearchName(e.target.value)}
             />
             <Button
-              onClick={clearSearch}
+              onClick={() => setSearchName("")}
               sx={{
                 color: "#FFF",
                 bgcolor: "#4169E1",
@@ -453,4 +447,6 @@ export default function Main() {
       </Box>
     </Box>
   );
-}
+};
+
+export default withAuth(Main);
