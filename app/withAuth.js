@@ -10,9 +10,10 @@ const WithAuth = (WrappedComponent) => {
     const router = useRouter();
 
     useEffect(() => {
+      // Update when Auth State Changes
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (!user) {
-          router.push("/");
+          router.push("/"); // Push back to Home
         } else {
           setLoading(false);
         }
@@ -21,6 +22,7 @@ const WithAuth = (WrappedComponent) => {
       return () => unsubscribe();
     }, [router]);
 
+    //In between Home and Main
     if (loading) {
       return (
         <Box
@@ -38,12 +40,15 @@ const WithAuth = (WrappedComponent) => {
       );
     }
 
+    // Return the Wrapped Content
     return <WrappedComponent {...props} />;
   };
 
+  // Helps Debug Vercel
   AuthHoc.displayName = `WithAuth(${
     WrappedComponent.displayName || WrappedComponent.name || "Component"
   })`;
+
   return AuthHoc;
 };
 

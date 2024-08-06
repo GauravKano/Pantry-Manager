@@ -11,6 +11,7 @@ export default function LandingPage() {
   const router = useRouter();
 
   useEffect(() => {
+    //Change to Auth
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
@@ -22,6 +23,7 @@ export default function LandingPage() {
     return () => unsubscribe();
   }, []);
 
+  // Handle Sign In
   const userSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
@@ -30,6 +32,7 @@ export default function LandingPage() {
     }
   };
 
+  // Handle Sign Out
   const userSignOut = async () => {
     try {
       await signOut(auth);
@@ -64,6 +67,7 @@ export default function LandingPage() {
         m="10px"
         textAlign="center"
       >
+        {/* Show Welcome Header */}
         <Typography variant="h2" fontSize="80px">
           Welcome!
         </Typography>
@@ -72,6 +76,7 @@ export default function LandingPage() {
         </Typography>
 
         {user ? (
+          //Show Buttons Once Signed in
           <Box display="flex" gap="40px">
             <Link href="/main">
               <Button
@@ -104,6 +109,7 @@ export default function LandingPage() {
             </Button>
           </Box>
         ) : (
+          //Show Sign in Button
           <Button
             onClick={userSignIn}
             sx={{

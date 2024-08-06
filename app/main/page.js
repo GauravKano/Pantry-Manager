@@ -40,6 +40,7 @@ const Main = () => {
   //   setPantry(inventoryList);
   // };
 
+  // Update Pantry Based on Search
   const updateSearchPantry = async (searchItemName) => {
     setLoading(true);
     const snap = query(collection(firestore, "inventory"));
@@ -141,7 +142,7 @@ const Main = () => {
     }
   };
 
-  // Update when Starting
+  // Update when Search is Changed and on Mount
   useEffect(() => {
     updateSearchPantry(searchName);
   }, [searchName]);
@@ -154,6 +155,7 @@ const Main = () => {
       justifyContent="center"
       alignItems="center"
     >
+      {/* Display */}
       <Box
         // border="1px solid black"
         width="100%"
