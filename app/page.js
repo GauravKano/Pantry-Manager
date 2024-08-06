@@ -6,7 +6,7 @@ import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function landingPage() {
+export default function LandingPage() {
   const [user, setUser] = useState(null);
   const router = useRouter();
 

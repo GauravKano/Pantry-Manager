@@ -4,7 +4,7 @@ import { auth } from "@/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { Box, Typography } from "@mui/material";
 
-const withAuth = (WrappedComponent) => {
+const WithAuth = (WrappedComponent) => {
   return (props) => {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
@@ -42,4 +42,4 @@ const withAuth = (WrappedComponent) => {
   };
 };
 
-export default withAuth;
+export default WithAuth;
