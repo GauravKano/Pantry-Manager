@@ -77,11 +77,11 @@ export default function LandingPage() {
 
       {user ? (
         //Show Buttons Once Signed in
-        <Box display="flex" gap="40px">
+        <Box display="flex" gap={{ xs: "20px", sm: "40px" }}>
           <Link href="/main">
             <Button
               sx={{
-                fontSize: "16px",
+                fontSize: "clamp(13.5px, 3vw, 20px)",
                 color: "#FFF",
                 bgcolor: "#00B2FF",
                 p: "10px 25px",
@@ -96,7 +96,7 @@ export default function LandingPage() {
           <Button
             onClick={userSignOut}
             sx={{
-              fontSize: "16px",
+              fontSize: "clamp(13.5px, 3vw, 20px)",
               color: "#FFF",
               bgcolor: "#00B2FF",
               p: "10px 25px",
@@ -113,7 +113,7 @@ export default function LandingPage() {
         <Button
           onClick={userSignIn}
           sx={{
-            fontSize: "16px",
+            fontSize: "20px",
             color: "#FFF",
             bgcolor: "#00B2FF",
             p: "10px 25px",
