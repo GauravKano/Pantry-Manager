@@ -8,10 +8,9 @@ import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
   const [user, setUser] = useState(null);
-  const router = useRouter();
 
   useEffect(() => {
-    //Change to Auth
+    //Handle Changes in Auth
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
@@ -20,6 +19,7 @@ export default function LandingPage() {
       }
     });
 
+    //Get 1% of screen vh
     const setVh = () => {
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty("--vh", `${vh}px`);
@@ -58,55 +58,28 @@ export default function LandingPage() {
       width="100vw"
       height="calc(var(--vh, 1vh) * 100)"
       display="flex"
+      flexDirection="column"
       justifyContent="center"
       alignItems="center"
+      gap="15px"
+      p="10px"
+      pb="40px"
+      textAlign="center"
       className="mainPage"
     >
-      <Box
-        // border="1px solid black"
-        width="100%"
-        height="50%"
-        maxWidth="800px"
-        minHeight="500px"
-        borderRadius="5px"
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        gap="15px"
-        p="10px"
-        pb="40px"
-        m="10px"
-        textAlign="center"
-      >
-        {/* Show Welcome Header */}
-        <Typography variant="h2" fontSize="80px">
-          Welcome!
-        </Typography>
-        <Typography variant="h6" mb="30px" fontSize="24px" fontWeight="400">
-          Your ultimate tool for effortless pantry and inventory management
-        </Typography>
+      {/* Show Welcome Header */}
+      <Typography variant="h2" fontSize="80px">
+        Welcome!
+      </Typography>
+      <Typography variant="h6" mb="30px" fontSize="24px" fontWeight="400">
+        Your ultimate tool for effortless pantry and inventory management
+      </Typography>
 
-        {user ? (
-          //Show Buttons Once Signed in
-          <Box display="flex" gap="40px">
-            <Link href="/main">
-              <Button
-                sx={{
-                  fontSize: "16px",
-                  color: "#FFF",
-                  bgcolor: "#00B2FF",
-                  p: "10px 25px",
-                  "&:hover": {
-                    bgcolor: "#0075FF",
-                  },
-                }}
-              >
-                Continue to Pantry
-              </Button>
-            </Link>
+      {user ? (
+        //Show Buttons Once Signed in
+        <Box display="flex" gap="40px">
+          <Link href="/main">
             <Button
-              onClick={userSignOut}
               sx={{
                 fontSize: "16px",
                 color: "#FFF",
@@ -117,13 +90,11 @@ export default function LandingPage() {
                 },
               }}
             >
-              Sign-out
+              Continue to Pantry
             </Button>
-          </Box>
-        ) : (
-          //Show Sign in Button
+          </Link>
           <Button
-            onClick={userSignIn}
+            onClick={userSignOut}
             sx={{
               fontSize: "16px",
               color: "#FFF",
@@ -134,10 +105,26 @@ export default function LandingPage() {
               },
             }}
           >
-            Sign-in
+            Sign-out
           </Button>
-        )}
-      </Box>
+        </Box>
+      ) : (
+        //Show Sign in Button
+        <Button
+          onClick={userSignIn}
+          sx={{
+            fontSize: "16px",
+            color: "#FFF",
+            bgcolor: "#00B2FF",
+            p: "10px 25px",
+            "&:hover": {
+              bgcolor: "#0075FF",
+            },
+          }}
+        >
+          Sign-in
+        </Button>
+      )}
     </Box>
   );
 }

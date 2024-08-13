@@ -147,10 +147,24 @@ const Main = () => {
     updateSearchPantry(searchName);
   }, [searchName]);
 
+  //Handle vh of screen
+  useEffect(() => {
+    const setVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", "${vh}px");
+    };
+
+    setVh();
+
+    window.addEventListener("resize", setVh);
+
+    return () => window.removeEventListener("resize", setVh);
+  }, []);
+
   return (
     <Box
       width="100vw"
-      height="100vh"
+      height="calc(var(--vh, 1vh) * 100)"
       display="flex"
       justifyContent="center"
       alignItems="center"
@@ -350,7 +364,6 @@ const Main = () => {
           </Box>
 
           {/* Food Display */}
-
           <Box
             minHeight="300px"
             overflow="auto"
