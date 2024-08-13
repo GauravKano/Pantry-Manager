@@ -322,7 +322,8 @@ const Main = () => {
 
         {/*Foods*/}
         <Box
-          p="15px 30px"
+          py="15px"
+          px={{ xs: "20px", md: "25px" }}
           width="100%"
           height="100%"
           display="flex"
