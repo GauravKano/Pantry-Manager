@@ -20,7 +20,19 @@ export default function LandingPage() {
       }
     });
 
-    return () => unsubscribe();
+    const setVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+
+    setVh(); // Set initially
+
+    window.addEventListener("resize", setVh);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener("resize", setVh);
+    };
   }, []);
 
   // Handle Sign In
@@ -44,7 +56,7 @@ export default function LandingPage() {
   return (
     <Box
       width="100vw"
-      height="100vh"
+      height="calc(var(--vh, 1vh) * 100)"
       display="flex"
       justifyContent="center"
       alignItems="center"
