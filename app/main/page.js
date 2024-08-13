@@ -173,7 +173,7 @@ const Main = () => {
       <Box
         // border="1px solid black"
         width="100%"
-        height="95%"
+        height="100%"
         maxWidth="800px"
         minHeight="500px"
         borderRadius="5px"
@@ -182,6 +182,7 @@ const Main = () => {
         alignItems="center"
         gap="15px"
         p="10px"
+        pb="0px"
         m="10px"
       >
         {/*Header*/}
