@@ -81,7 +81,7 @@ export default function LandingPage() {
           <Link href="/main">
             <Button
               sx={{
-                fontSize: "clamp(13.5px, 3vw, 20px)",
+                fontSize: "clamp(13.5px, 3vw, 16px)",
                 color: "#FFF",
                 bgcolor: "#00B2FF",
                 p: "10px 25px",
@@ -96,7 +96,7 @@ export default function LandingPage() {
           <Button
             onClick={userSignOut}
             sx={{
-              fontSize: "clamp(13.5px, 3vw, 20px)",
+              fontSize: "clamp(13.5px, 3vw, 16px)",
               color: "#FFF",
               bgcolor: "#00B2FF",
               p: "10px 25px",
@@ -113,7 +113,7 @@ export default function LandingPage() {
         <Button
           onClick={userSignIn}
           sx={{
-            fontSize: "20px",
+            fontSize: "17px",
             color: "#FFF",
             bgcolor: "#00B2FF",
             p: "10px 25px",
